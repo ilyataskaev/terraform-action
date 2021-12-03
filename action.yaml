@@ -1,0 +1,68 @@
+name: 'Terraform'
+description: 'Run Terraform'
+inputs:
+  action:
+    description: 'plan or apply'
+    required: true
+  app-name:
+    description: 'Name of the APP'
+    required: true
+  aws-region:
+    description: 'AWS Region'
+    default: 'us-east-1'
+    required: false
+  aws-access-key-id:
+    description: 'AWS Access key ID'
+    required: true
+  aws-secret-access-key:
+    description: 'AWS Sectret Access key'
+    required: true
+  working-directory:
+    description: 'Working Directory where to run terraform'
+    default: './infrastructure'
+    required: false
+
+runs:
+  using: "composite"
+  steps:
+
+  - name: Configure AWS Credentials
+    uses: aws-actions/configure-aws-credentials@v1
+    with:
+      aws-access-key-id: ${{ inputs.aws-access-key-id }}
+      aws-secret-access-key: ${{ inputs.aws-secret-access-key }}
+      aws-region: ${{ inputs.aws-region }}
+
+  - name: Setup Terraform
+    uses: hashicorp/setup-terraform@v1
+    with:
+      terraform_version: 1.0.x
+      
+  - name: Execute Terraform
+    env:
+      EXEC: ${{ inputs.action }}
+      APP_NAME: ${{ inputs.app-name }}
+      TF_VAR_app_name: ${{ inputs.app-name }}
+    working-directory: ${{ inputs.working-directory }}
+    run: |
+      set -x
+      set -e
+      terraform --version
+      terraform init -backend-config "workspace_key_prefix=${APP_NAME}"
+      terraform validate
+
+      if [[ "${EXEC}" == "plan" ]]
+      then
+        terraform plan -input=false
+      fi
+
+      if [[ "${EXEC}" == "apply" ]]
+      then
+        terraform apply -auto-approve -input=false
+      fi
+
+      if [[ "${EXEC}" == "destroy" ]]
+      then
+        terraform destroy -auto-approve -input=false
+      fi
+    shell: bash
