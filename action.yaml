@@ -22,6 +22,11 @@ inputs:
     default: './infrastructure'
     required: false
 
+outputs:
+  terraform_output:
+    value: ${{ steps.terraform.outputs.outputs }}
+
+
 runs:
   using: "composite"
   steps:
@@ -65,4 +70,5 @@ runs:
       then
         terraform destroy -auto-approve -input=false
       fi
+      echo "output=$(terraform output)" >> $GITHUB_OUTPUT
     shell: bash
