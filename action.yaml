@@ -23,9 +23,10 @@ inputs:
     required: false
 
 outputs:
-  terraform_output:
-    value: ${{ steps.terraform.outputs.terraform_output }}
-
+  ecr_repo_url:
+    value: ${{ steps.terraform.outputs.ecr_repo_url }}
+  lb_dns_name:
+    value: ${{ steps.terraform.outputs.lb_dns_name }}
 
 runs:
   using: "composite"
@@ -71,5 +72,7 @@ runs:
       then
         terraform destroy -auto-approve -input=false
       fi
-      echo "terraform_output=$(terraform output)" >> $GITHUB_OUTPUT
+      terraform output -json > output.json
+      echo "ecr_repo_url=$(cat output.json | jq .ecr_repo_url.value)" >> $GITHUB_OUTPUT
+      echo "lb_dns_name=$(cat output.json | jq .lb_dns_name.value)" >> $GITHUB_OUTPUT
     shell: bash
