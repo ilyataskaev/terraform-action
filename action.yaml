@@ -24,7 +24,7 @@ inputs:
 
 outputs:
   terraform_output:
-    value: ${{ steps.terraform.outputs.outputs }}
+    value: ${{ steps.terraform.outputs.terraform_output }}
 
 
 runs:
@@ -70,5 +70,5 @@ runs:
       then
         terraform destroy -auto-approve -input=false
       fi
-      echo "output=$(terraform output)" >> $GITHUB_OUTPUT
+      echo "terraform_output=$(terraform output)" >> $GITHUB_OUTPUT
     shell: bash
