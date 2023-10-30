@@ -44,6 +44,7 @@ runs:
       terraform_version: 1.0.x
 
   - name: Execute Terraform
+    id: terraform
     env:
       EXEC: ${{ inputs.action }}
       APP_NAME: ${{ inputs.app-name }}
