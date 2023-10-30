@@ -27,7 +27,7 @@ runs:
   steps:
 
   - name: Configure AWS Credentials
-    uses: aws-actions/configure-aws-credentials@v1
+    uses: aws-actions/configure-aws-credentials@v4.0.1
     with:
       aws-access-key-id: ${{ inputs.aws-access-key-id }}
       aws-secret-access-key: ${{ inputs.aws-secret-access-key }}
@@ -37,7 +37,7 @@ runs:
     uses: hashicorp/setup-terraform@v1
     with:
       terraform_version: 1.0.x
-      
+
   - name: Execute Terraform
     env:
       EXEC: ${{ inputs.action }}
